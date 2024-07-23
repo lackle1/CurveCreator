@@ -9,6 +9,9 @@ namespace CurveCreator
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
+        private Curve _curve;
+        private CurveVisualiser _visualiser;
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -18,8 +21,6 @@ namespace CurveCreator
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
             base.Initialize();
         }
 
@@ -27,24 +28,33 @@ namespace CurveCreator
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            _graphics.PreferredBackBufferWidth = 1600;
+            _graphics.PreferredBackBufferHeight = 900;
+            _graphics.ApplyChanges();
+
+            Texture2D blank = Content.Load<Texture2D>("square");
+            _visualiser = new CurveVisualiser(blank);
+            _curve = new Curve(10, 110, 0.95f);
         }
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Back))
                 Exit();
-
-            // TODO: Add your update logic here
 
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
 
-            // TODO: Add your drawing code here
+
+            _spriteBatch.Begin(SpriteSortMode.Deferred);
+
+            _visualiser.Draw(_curve, _spriteBatch);
+
+            _spriteBatch.End();
 
             base.Draw(gameTime);
         }
