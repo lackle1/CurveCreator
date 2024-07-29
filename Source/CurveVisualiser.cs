@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Grondslag;
+﻿using Grondslag;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 
 namespace CurveCreator
 {
@@ -15,8 +10,7 @@ namespace CurveCreator
         private Vector2i _pos; // top-right
         private int _width, _height;
         private int _lineThickness;
-        private float _accuracy; // (0, 1]. Percentage of pixels on the x-axis that will have their corresponding y-values individually calculated.
-        private float _pointDist; // Distance between calculated points. Screen-space.
+        private float _numSegements; // Number of lines.
 
         private Texture2D _blank;
 
@@ -24,34 +18,99 @@ namespace CurveCreator
         {
             _blank = blank;
 
-            _pos = new Vector2i(100, 100);
+            _pos = new Vector2i(600, 250);
             _width = 400;
             _height = 400;
             _lineThickness = 10;
+            _numSegements = 100;
+        }
 
-            _accuracy = 1f;
-            _pointDist = (1 / _accuracy) * (_width / 100);
+        public Vector2 ScreenToGraphSpace(Vector2 pos, Curve curve)
+        {
+            Vector2 result = pos - _pos;
+            result.X *= curve.Domain / _width;
+            result.Y = (_height - result.Y) / _height;
+
+            return result;
         }
 
         public void Draw(Curve c, SpriteBatch sb)
         {
             sb.Draw(_blank, new Rectangle(_pos.X, _pos.Y, _width, _height), new Color(15, 15, 15));
 
-            Rectangle rect = new Rectangle(0, 0, (int)MathF.Ceiling(_pointDist), _lineThickness);
-            int domain = c.Upper - c.Lower;
-            float pointDist = (1 / _accuracy) * (domain / 100); // Graph-space.
+            Rectangle rect = Rectangle.Empty;
+            Vector2 lastPoint = Vector2i.Invalid;
 
-            for (float x = c.Lower; x < c.Upper; x += pointDist)
+            //for (int i = 0; i <= _numSegements; i++)
+            //{
+            //    float t = i / _numSegements; // Incrementing float results in 10.000001
+
+            //    Vector2 currentPoint = Vector2.Zero;
+            //    Vector2 value = c.GetVector(t);
+            //    currentPoint.X = _pos.X + (value.X / c.Domain) * _width;
+            //    currentPoint.Y = _pos.Y + _height - value.Y * _height;
+
+            //    if (lastPoint == Vector2i.Invalid) // Is first point?
+            //    {
+            //        lastPoint = currentPoint;
+            //        continue;
+            //    }
+
+            //    int dist = (int)Vector2.Distance(lastPoint, currentPoint);
+            //    Vector2i origin = new Vector2i(0, 0);
+            //    float rot = MathF.Atan2(currentPoint.Y - lastPoint.Y, currentPoint.X - lastPoint.X);
+            //    rect = new Rectangle((int)lastPoint.X, (int)lastPoint.Y, dist, _lineThickness);
+
+            //    sb.Draw(_blank, rect, null, Color.Blue, rot, origin, SpriteEffects.None, 0);
+
+            //    lastPoint = currentPoint;
+            //}
+
+            //rect = Rectangle.Empty;
+            //lastPoint = Vector2i.Invalid;
+
+            for (int i = 0; i <= _numSegements; i++)
             {
-                float yValue = c.GetValue(x);
-                int xPos = (int)((x - c.Lower) / domain * _width); // Convert to screenspace.
-                int yPos = (int)(yValue * _height);
+                float x = c.Start + i / _numSegements * c.Domain;
 
-                rect.X = _pos.X + xPos;
-                rect.Y = _pos.Y + _height - (yPos - (rect.Height/2));
+                //Vector2 tempA = c.GetVector(0.5f);
+                //float tempB = c.GetT(tempA.X);
+                //float tempC = c.GetYFromX(tempB);
 
-                sb.Draw(_blank, rect, Color.White);
+                Vector2 currentPoint = Vector2.Zero;
+                float yValue = c.GetYFromX(x);
+                currentPoint.X = _pos.X + ((x - c.Start) / c.Domain) * _width;
+                currentPoint.Y = _pos.Y + _height - yValue * _height;
+
+                if (lastPoint == Vector2i.Invalid) // Is first point?
+                {
+                    lastPoint = currentPoint;
+                    continue;
+                }
+
+                int dist = (int)Vector2.Distance(lastPoint, currentPoint);
+                Vector2i origin = new Vector2i(0, 0);
+                float rot = MathF.Atan2(currentPoint.Y - lastPoint.Y, currentPoint.X - lastPoint.X);
+                rect = new Rectangle((int)lastPoint.X, (int)lastPoint.Y, dist, _lineThickness);
+
+                sb.Draw(_blank, rect, null, Color.Green, rot, origin, SpriteEffects.None, 0);
+
+                lastPoint = currentPoint;
             }
+
+            rect.Width = 8; rect.Height = 8;
+
+            rect.X = (int)(_pos.X + c.Points[0].X / c.Domain * _width);
+            rect.Y = (int)(_pos.Y + _height - (c.Points[0].Y *_height));
+            sb.Draw(_blank, rect, Color.Red);
+
+            rect.X = (int)(_pos.X + c.Points[1].X / c.Domain * _width);
+            rect.Y = (int)(_pos.Y + _height - (c.Points[1].Y *_height));
+            sb.Draw(_blank, rect, Color.Red);
+
+            rect.X = (int)(_pos.X + c.Points[2].X / c.Domain * _width);
+            rect.Y = (int)(_pos.Y + _height - (c.Points[2].Y *_height));
+            sb.Draw(_blank, rect, Color.Red);
         }
     }
 }

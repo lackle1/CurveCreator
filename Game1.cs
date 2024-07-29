@@ -34,13 +34,33 @@ namespace CurveCreator
 
             Texture2D blank = Content.Load<Texture2D>("square");
             _visualiser = new CurveVisualiser(blank);
-            _curve = new Curve(10, 110, 0.95f);
+            _curve = new Curve(new Vector2(0,0), new Vector2(0.5f, 0.5f), new Vector2(1, 1));
         }
 
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Back))
                 Exit();
+
+            Vector2 mousePos = new Vector2(Mouse.GetState().Position.X, Mouse.GetState().Position.Y);
+            //_curve.SetControl(_visualiser.ScreenToGraphSpace(mousePos, _curve));
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Left))
+            {
+                _curve.DecrementControlX();
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Right))
+            {
+                _curve.IncrementControlX();
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Down))
+            {
+                _curve.DecrementControlY();
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Up))
+            {
+                _curve.IncrementControlY();
+            }
 
             base.Update(gameTime);
         }
