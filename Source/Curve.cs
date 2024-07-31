@@ -29,11 +29,7 @@ namespace CurveCreator
         public Vector2 P1 => Points[1];
         public Vector2 P2 => Points[2];
 
-        public float Start => Points[0].X;
-        public float Control => Points[1].X;
-        public float End => Points[2].X;
-
-        public float Domain => End - Start;
+        public float Domain => P2.X - P0.X;
 
         public void SetStart(Vector2 value)
         {
@@ -50,23 +46,23 @@ namespace CurveCreator
 
         public void IncrementControlX()
         {
-            _points[1].X += 0.1f;
-            _points[1].X = Math.Clamp(_points[1].X, 0, 1);
+            _points[1].X += 2f;
+            _points[1].X = Math.Clamp(P1.X, P0.X, P2.X);
         }
         public void IncrementControlY()
         {
-            _points[1].Y += 0.1f;
-            _points[1].Y = Math.Clamp(_points[1].Y, 0, 1);
+            _points[1].Y += 0.02f;
+            _points[1].Y = Math.Clamp(P1.Y, 0, 1);
         }
         public void DecrementControlX()
         {
-            _points[1].X -= 0.1f;
-            _points[1].X = Math.Clamp(_points[1].X, 0, 1);
+            _points[1].X -= 2f;
+            _points[1].X = Math.Clamp(P1.X, P0.X, P2.X);
         }
         public void DecrementControlY()
         {
-            _points[1].Y -= 0.1f;
-            _points[1].Y = Math.Clamp(_points[1].Y, 0, 1);
+            _points[1].Y -= 0.02f;
+            _points[1].Y = Math.Clamp(P1.Y, 0, 1);
         }
 
         public Vector2 GetVector(float t) // Where t is [0,1]

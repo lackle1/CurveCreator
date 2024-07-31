@@ -14,7 +14,9 @@ namespace CurveCreator
 
         private Texture2D _blank;
 
-        public CurveVisualiser(Texture2D blank)
+        private SpriteFont _font;
+
+        public CurveVisualiser(Texture2D blank, SpriteFont font)
         {
             _blank = blank;
 
@@ -23,6 +25,7 @@ namespace CurveCreator
             _height = 400;
             _lineThickness = 10;
             _numSegements = 100;
+            _font = font;
         }
 
         public Vector2 ScreenToGraphSpace(Vector2 pos, Curve curve)
@@ -71,15 +74,11 @@ namespace CurveCreator
 
             for (int i = 0; i <= _numSegements; i++)
             {
-                float x = c.Start + i / _numSegements * c.Domain;
-
-                //Vector2 tempA = c.GetVector(0.5f);
-                //float tempB = c.GetT(tempA.X);
-                //float tempC = c.GetYFromX(tempB);
+                float x = c.P0.X + i / _numSegements * c.Domain;
 
                 Vector2 currentPoint = Vector2.Zero;
                 float yValue = c.GetYFromX(x);
-                currentPoint.X = _pos.X + ((x - c.Start) / c.Domain) * _width;
+                currentPoint.X = _pos.X + ((x - c.P0.X) / c.Domain) * _width;
                 currentPoint.Y = _pos.Y + _height - yValue * _height;
 
                 if (lastPoint == Vector2i.Invalid) // Is first point?
@@ -100,17 +99,20 @@ namespace CurveCreator
 
             rect.Width = 8; rect.Height = 8;
 
-            rect.X = (int)(_pos.X + c.Points[0].X / c.Domain * _width);
-            rect.Y = (int)(_pos.Y + _height - (c.Points[0].Y *_height));
+            rect.X = (int)(_pos.X + (c.P0.X - c.P0.X) / c.Domain * _width);
+            rect.Y = (int)(_pos.Y + _height - (c.P0.Y *_height));
             sb.Draw(_blank, rect, Color.Red);
+            sb.DrawString(_font, c.P0.X + ", " + c.GetYFromX(c.P0.X), new Vector2(rect.X + 8, rect.Y + 8), Color.White);
 
-            rect.X = (int)(_pos.X + c.Points[1].X / c.Domain * _width);
-            rect.Y = (int)(_pos.Y + _height - (c.Points[1].Y *_height));
+            rect.X = (int)(_pos.X + (c.P1.X - c.P0.X) / c.Domain * _width);
+            rect.Y = (int)(_pos.Y + _height - (c.P1.Y *_height));
             sb.Draw(_blank, rect, Color.Red);
+            sb.DrawString(_font, c.P1.X + ", " + c.P1.Y, new Vector2(rect.X + 8, rect.Y + 8), Color.White);
 
-            rect.X = (int)(_pos.X + c.Points[2].X / c.Domain * _width);
-            rect.Y = (int)(_pos.Y + _height - (c.Points[2].Y *_height));
+            rect.X = (int)(_pos.X + (c.P2.X - c.P0.X) / c.Domain * _width);
+            rect.Y = (int)(_pos.Y + _height - (c.P2.Y *_height));
             sb.Draw(_blank, rect, Color.Red);
+            sb.DrawString(_font, c.P2.X + ", " + c.P2.Y, new Vector2(rect.X + 8, rect.Y + 8), Color.White);
         }
     }
 }
