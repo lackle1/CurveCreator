@@ -47,7 +47,7 @@ namespace CurveCreator
         public void IncrementControlX()
         {
             _points[1].X += 2f;
-            _points[1].X = Math.Clamp(P1.X, P0.X, P2.X);
+            _points[1].X = Math.Clamp(P1.X, -100, 100);
         }
         public void IncrementControlY()
         {
@@ -57,7 +57,7 @@ namespace CurveCreator
         public void DecrementControlX()
         {
             _points[1].X -= 2f;
-            _points[1].X = Math.Clamp(P1.X, P0.X, P2.X);
+            _points[1].X = Math.Clamp(P1.X, -100, 100);
         }
         public void DecrementControlY()
         {

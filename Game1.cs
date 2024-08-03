@@ -35,7 +35,7 @@ namespace CurveCreator
             Texture2D blank = Content.Load<Texture2D>("square");
             SpriteFont font = Content.Load<SpriteFont>("Minecraft16");
             _visualiser = new CurveVisualiser(blank, font);
-            _curve = new Curve(new Vector2(0,0.5f), new Vector2(0.5f, 0.5f), new Vector2(100, 0.5f));
+            _curve = new Curve(new Vector2(-100,0.5f), new Vector2(0.5f, 0.5f), new Vector2(100, 0.5f));
         }
 
         protected override void Update(GameTime gameTime)
