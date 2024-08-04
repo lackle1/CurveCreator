@@ -89,7 +89,7 @@ namespace CurveCreator
 
             for (int i = 0; i <= _numSegements; i++)
             {
-                float x = c.P0.X + i / _numSegements * _domain;
+                float x = c.P0.X + i / _numSegements * c.Domain;
 
                 Vector2 currentPoint = Vector2.Zero;
                 float yValue = c.GetYFromX(x);
