@@ -7,12 +7,17 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 
 namespace CurveCreator
 {
     public struct Curve
     {
         private Vector2[] _points;
+        private const float MinY = 0f;
+        private const float MaxY = 1f;
+        private const float ControlMinX = -100f;
+        private const float ControlMaxX = 100f;
 
         public Curve(Vector2 start, Vector2 control, Vector2 end)
         {
@@ -44,26 +49,77 @@ namespace CurveCreator
             _points[2] = value;
         }
 
-        public void IncrementControlX()
+        public void AdjustPoint(int index, float deltaX, float deltaY)
         {
-            _points[1].X += 2f;
-            _points[1].X = Math.Clamp(P1.X, -100, 100);
+            _points[index].X += deltaX;
+            _points[index].Y += deltaY;
+
+            _points[index].X = MathF.Round(_points[index].X, 2);
+            _points[index].Y = MathF.Round(_points[index].Y, 2);
+
+            if (index == 1)
+            {
+                _points[index].X = Math.Clamp(_points[index].X, ControlMinX, ControlMaxX);
+            }
+
+            if (!Keyboard.GetState().IsKeyDown(Keys.LeftControl))
+            {
+                _points[index].Y = Math.Clamp(_points[index].Y, MinY, MaxY);
+            }
         }
-        public void IncrementControlY()
-        {
-            _points[1].Y += 0.02f;
-            _points[1].Y = Math.Clamp(P1.Y, 0, 1);
-        }
-        public void DecrementControlX()
-        {
-            _points[1].X -= 2f;
-            _points[1].X = Math.Clamp(P1.X, -100, 100);
-        }
-        public void DecrementControlY()
-        {
-            _points[1].Y -= 0.02f;
-            _points[1].Y = Math.Clamp(P1.Y, 0, 1);
-        }
+
+        #region shit, rubbish, abominable code
+        //public void IncrementStartY()
+        //{
+        //    _points[0].Y += 0.02f;
+        //    _points[0].Y = MathF.Round(_points[0].Y, 2);
+        //    _points[0].Y = Math.Clamp(P0.Y, 0, 1);
+        //}
+        //public void DecrementStartY()
+        //{
+        //    _points[0].Y -= 0.02f;
+        //    _points[0].Y = MathF.Round(_points[0].Y, 2);
+        //    _points[0].Y = Math.Clamp(P0.Y, 0, 1);
+        //}
+
+        //public void IncrementControlX()
+        //{
+        //    _points[1].X += 2f;
+        //    _points[1].X = MathF.Round(_points[1].X, 2);
+        //    _points[1].X = Math.Clamp(P1.X, -100, 100);
+        //}
+        //public void IncrementControlY()
+        //{
+        //    _points[1].Y += 0.02f;
+        //    _points[1].Y = MathF.Round(_points[1].Y, 2);
+        //    _points[1].Y = Math.Clamp(P1.Y, 0, 1);
+        //}
+        //public void DecrementControlX()
+        //{
+        //    _points[1].X -= 2f;
+        //    _points[1].X = MathF.Round(_points[1].X, 2);
+        //    _points[1].X = Math.Clamp(P1.X, -100, 100);
+        //}
+        //public void DecrementControlY()
+        //{
+        //    _points[1].Y -= 0.02f;
+        //    _points[1].Y = MathF.Round(_points[1].Y, 2);
+        //    _points[1].Y = Math.Clamp(P1.Y, 0, 1);
+        //}
+
+        //public void IncrementEndY()
+        //{
+        //    _points[2].Y += 0.02f;
+        //    _points[2].Y = MathF.Round(_points[2].Y, 2);
+        //    _points[2].Y = Math.Clamp(P2.Y, 0, 1);
+        //}
+        //public void DecrementEndY()
+        //{
+        //    _points[2].Y -= 0.02f;
+        //    _points[2].Y = MathF.Round(_points[2].Y, 2);
+        //    _points[2].Y = Math.Clamp(P2.Y, 0, 1);
+        //}
+        #endregion
 
         public Vector2 GetVector(float t) // Where t is [0,1]
         {

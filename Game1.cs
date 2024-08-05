@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Diagnostics;
 
 namespace CurveCreator
 {
@@ -11,6 +12,8 @@ namespace CurveCreator
 
         private Curve _curve;
         private CurveVisualiser _visualiser;
+
+        private KeyboardState _oldState;
 
         public Game1()
         {
@@ -35,7 +38,7 @@ namespace CurveCreator
             Texture2D blank = Content.Load<Texture2D>("square");
             SpriteFont font = Content.Load<SpriteFont>("Minecraft16");
             _visualiser = new CurveVisualiser(blank, font);
-            _curve = new Curve(new Vector2(-100,0.5f), new Vector2(0.5f, 0.5f), new Vector2(100, 0.5f));
+            _curve = new Curve(new Vector2(-100,0f), new Vector2(100f, 0f), new Vector2(100, 1f));
         }
 
         protected override void Update(GameTime gameTime)
@@ -46,22 +49,51 @@ namespace CurveCreator
             Vector2 mousePos = new Vector2(Mouse.GetState().Position.X, Mouse.GetState().Position.Y);
             //_curve.SetControl(_visualiser.ScreenToGraphSpace(mousePos, _curve));
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Left))
+            KeyboardState keyboardState = Keyboard.GetState();
+
+            #region abomination
+            if (keyboardState.IsKeyDown(Keys.Q))
             {
-                _curve.DecrementControlX();
+                _curve.AdjustPoint(0, 0, 0.02f);
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.Right))
+            if (keyboardState.IsKeyDown(Keys.A))
             {
-                _curve.IncrementControlX();
+                _curve.AdjustPoint(0, 0, -0.02f);
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.Down))
+            
+            if (keyboardState.IsKeyDown(Keys.Right))
             {
-                _curve.DecrementControlY();
+                _curve.AdjustPoint(1, 2f, 0);
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.Up))
+            if (keyboardState.IsKeyDown(Keys.Left))
             {
-                _curve.IncrementControlY();
+                _curve.AdjustPoint(1, -2f, 0);
             }
+            if (keyboardState.IsKeyDown(Keys.Up))
+            {
+                _curve.AdjustPoint(1, 0, 0.02f);
+            }
+            if (keyboardState.IsKeyDown(Keys.Down))
+            {
+                _curve.AdjustPoint(1, 0, -0.02f);
+            }
+
+            if (keyboardState.IsKeyDown(Keys.W))
+            {
+                _curve.AdjustPoint(2, 0, 0.02f);
+            }
+            if (keyboardState.IsKeyDown(Keys.S))
+            {
+                _curve.AdjustPoint(2, 0, -0.02f);
+            }
+            #endregion
+
+            if (keyboardState.IsKeyDown(Keys.C) && _oldState.IsKeyUp(Keys.C))
+            {
+                Debug.WriteLine($"[{_curve.P0.X}, {_curve.P0.Y}, {_curve.P1.X}, {_curve.P1.Y}, {_curve.P2.X}, {_curve.P2.Y}]");
+            }
+
+            _oldState = Keyboard.GetState();
 
             base.Update(gameTime);
         }
